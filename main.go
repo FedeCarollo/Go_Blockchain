@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
-	"simple_blockchain/merkletree"
+	"simple_blockchain/cryptography"
 )
 
 func main() {
@@ -18,15 +18,20 @@ func main() {
 	// 	fmt.Printf("Hash: %x\n", block.Hash)
 	// 	fmt.Println()
 	// }
-	hashes := make([][]byte, 5)
-	for i := 0; i < 5; i++ {
-		hashes[i] = hashInt(i)
-	}
-	merkle := merkletree.GenerateMerkleTree(hashes)
-	// fmt.Println(merkle)
+	// hashes := make([][]byte, 5)
+	// for i := 0; i < 5; i++ {
+	// 	hashes[i] = hashInt(i)
+	// }
+	// merkle := merkletree.GenerateMerkleTree(hashes)
+	// // fmt.Println(merkle)
 
-	fmt.Println(merkle.CheckValidity(hashInt(0), 1))
+	// fmt.Println(merkle.CheckValidity(hashInt(0), 1))
+	cryptography.GenerateKeyPair()
 
+	privateKey := cryptography.ReadPrivateKeyFromFile("private.pem")
+	publicKey := privateKey.PubKey()
+
+	cryptography.PrintKeys(*privateKey, *publicKey)
 }
 
 func hashInt(i int) []byte {
