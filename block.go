@@ -22,13 +22,17 @@ func (b *Block) SetHash() {
 	b.Hash = hash[:]
 }
 
-func NewBlock(data string, prevHashBlock []byte) *Block {
+func NewBlock(data string, prevBlockHash []byte) *Block {
 	block := &Block{
 		Timestamp:     time.Now().Unix(),
 		Data:          []byte(data),
-		PrevBlockHash: prevHashBlock,
+		PrevBlockHash: prevBlockHash,
 		Hash:          []byte{},
 	}
 	block.SetHash()
 	return block
+}
+
+func NewGenesisBlock() *Block {
+	return NewBlock("Genesis block", []byte{})
 }
