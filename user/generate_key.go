@@ -1,4 +1,4 @@
-package cryptography
+package user
 
 import (
 	"fmt"
@@ -7,25 +7,24 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 )
 
-func GenerateKeyPair() {
+func generateKeyPair(save bool) (*secp256k1.PrivateKey, *secp256k1.PublicKey) {
 	privateKey, err := secp256k1.GeneratePrivateKey()
 
 	if err != nil {
 		panic(err)
 	}
 
-	//save to private.pem
-	saveKeyToFile("private.pem", privateKey.Serialize())
-
 	publicKey := privateKey.PubKey()
 
-	saveKeyToFile("public.pem", publicKey.SerializeUncompressed())
-
-	PrintKeys(*privateKey, *publicKey)
+	if save {
+		saveKeyToFile("private.pem", privateKey.Serialize())
+		// saveKeyToFile("public.pem", publicKey.SerializeUncompressed())
+	}
+	return privateKey, publicKey
 
 }
 
-func PrintKeys(privateKey secp256k1.PrivateKey, publicKey secp256k1.PublicKey) {
+func printKeys(privateKey secp256k1.PrivateKey, publicKey secp256k1.PublicKey) {
 	fmt.Printf("Private key: %x\n", privateKey.Serialize())
 	fmt.Printf("Public key (compressed): %x\n", publicKey.SerializeCompressed())
 	fmt.Printf("Public key: %x\n", publicKey.SerializeUncompressed())
@@ -45,7 +44,7 @@ func saveKeyToFile(path string, key []byte) {
 	}
 }
 
-func ReadPrivateKeyFromFile(path string) *secp256k1.PrivateKey {
+func readPrivateKeyFromFile(path string) *secp256k1.PrivateKey {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
 	if err != nil {
 		panic(err)
@@ -62,7 +61,7 @@ func ReadPrivateKeyFromFile(path string) *secp256k1.PrivateKey {
 	return privateKey
 }
 
-func ReadPublicKeyFromFile(path string) *secp256k1.PublicKey {
+func readPublicKeyFromFile(path string) *secp256k1.PublicKey {
 	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
 	if err != nil {
 		panic(err)

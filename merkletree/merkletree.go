@@ -17,8 +17,8 @@ type node struct {
 type dir int
 
 const (
-	LEFT dir = iota
-	RIGHT
+	left dir = iota
+	right
 )
 
 type proofNode struct {
@@ -73,10 +73,10 @@ func (merkle *Merkle) generateProof(pos int) []proofNode {
 	for lvl := 0; lvl < len(tree)-1; lvl++ {
 		if pos%2 == 0 {
 			if pos+1 < len(tree[lvl]) {
-				proof = append(proof, proofNode{tree[lvl][pos+1].hash, RIGHT})
+				proof = append(proof, proofNode{tree[lvl][pos+1].hash, right})
 			}
 		} else {
-			proof = append(proof, proofNode{tree[lvl][pos-1].hash, LEFT})
+			proof = append(proof, proofNode{tree[lvl][pos-1].hash, left})
 		}
 		pos /= 2
 	}
@@ -90,7 +90,7 @@ func (merkle *Merkle) CheckValidity(hash []byte, pos int) bool {
 	proof := merkle.generateProof(pos)
 	total_hash := hash
 	for _, proof_hash := range proof {
-		if proof_hash.direction == LEFT {
+		if proof_hash.direction == left {
 			total_hash = joinHash(proof_hash.hash, total_hash)
 		} else { //RIGHT
 			total_hash = joinHash(total_hash, proof_hash.hash)

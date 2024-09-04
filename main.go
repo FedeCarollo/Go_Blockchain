@@ -3,35 +3,25 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
-	"simple_blockchain/cryptography"
+	"simple_blockchain/merkletree"
+	"simple_blockchain/user"
 )
 
 func main() {
-	// bc := NewBlockChain()
+	hashes := make([][]byte, 0)
+	for i := 0; i < 11; i++ {
+		hashes = append(hashes, hashInt(i))
+	}
+	merkleTree := merkletree.GenerateMerkleTree(hashes)
+	fmt.Printf("Root hash: %x\n", merkleTree.GetRoot())
 
-	// bc.AddBlock("Sent 1 BTC to Ivan")
-	// bc.AddBlock("Sent 2 BTC to Ivan")
+	fmt.Println(merkleTree.CheckValidity(hashes[2], 3))
 
-	// for _, block := range bc.blocks {
-	// 	fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
-	// 	fmt.Printf("Data: %s\n", block.Data)
-	// 	fmt.Printf("Hash: %x\n", block.Hash)
-	// 	fmt.Println()
-	// }
-	// hashes := make([][]byte, 5)
-	// for i := 0; i < 5; i++ {
-	// 	hashes[i] = hashInt(i)
-	// }
-	// merkle := merkletree.GenerateMerkleTree(hashes)
-	// // fmt.Println(merkle)
+	user.CreateUser()
+	usr := user.GetUserFromFile("private.pem")
+	usr.PrintKeys()
 
-	// fmt.Println(merkle.CheckValidity(hashInt(0), 1))
-	cryptography.GenerateKeyPair()
-
-	privateKey := cryptography.ReadPrivateKeyFromFile("private.pem")
-	publicKey := privateKey.PubKey()
-
-	cryptography.PrintKeys(*privateKey, *publicKey)
+	fmt.Printf("User ID: %x\n", usr.GetUserId())
 }
 
 func hashInt(i int) []byte {
