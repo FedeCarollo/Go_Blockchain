@@ -32,8 +32,11 @@ func joinHash(node1, node2 []byte) []byte {
 	return hash[:]
 }
 
-func GenerateMerkleTree(hashes [][]byte) Merkle {
+func GenerateMerkleTree(hashes [][]byte) *Merkle {
 	merkleTree := Merkle{}
+	if len(hashes) == 0 {
+		return &merkleTree
+	}
 	merkleTree.hashes = hashes
 	nodes := make([][]node, 1)
 	nodes[0] = make([]node, len(hashes))
@@ -60,11 +63,15 @@ func GenerateMerkleTree(hashes [][]byte) Merkle {
 	}
 	merkleTree.tree = nodes
 
-	return merkleTree
+	return &merkleTree
 }
 
 func (merkle *Merkle) GetRoot() []byte {
-	return merkle.tree[len(merkle.tree)-1][0].hash
+	if len(merkle.tree) == 0 {
+		return []byte{}
+	} else {
+		return merkle.tree[len(merkle.tree)-1][0].hash
+	}
 }
 
 func (merkle *Merkle) generateProof(pos int) []proofNode {

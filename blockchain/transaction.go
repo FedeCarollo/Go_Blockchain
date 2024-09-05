@@ -55,8 +55,8 @@ func (t *Transaction) Verify() bool {
 		panic(err)
 	}
 
+	//hashes check if hashes match
 	if !signature.Verify(hash, pubKey) {
-		//hashes don't match
 		return false
 	}
 

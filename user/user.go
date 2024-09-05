@@ -10,7 +10,7 @@ type User struct {
 //Create User with default parameters
 func CreateUser() User {
 
-	return CreateUserWithParams(true, "private.pem")
+	return CreateUserWithParams(true, "private.key")
 }
 
 func CreateUserWithParams(save bool, path string) User {
