@@ -7,8 +7,14 @@ type User struct {
 	PublicKey  *secp256k1.PublicKey
 }
 
+//Create User with default parameters
 func CreateUser() User {
-	privateKey, publicKey := generateKeyPair(true)
+
+	return CreateUserWithParams(true, "private.pem")
+}
+
+func CreateUserWithParams(save bool, path string) User {
+	privateKey, publicKey := generateKeyPair(save, path)
 	return User{
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,

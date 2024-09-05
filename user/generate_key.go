@@ -7,7 +7,7 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 )
 
-func generateKeyPair(save bool) (*secp256k1.PrivateKey, *secp256k1.PublicKey) {
+func generateKeyPair(save bool, path string) (*secp256k1.PrivateKey, *secp256k1.PublicKey) {
 	privateKey, err := secp256k1.GeneratePrivateKey()
 
 	if err != nil {
@@ -17,7 +17,7 @@ func generateKeyPair(save bool) (*secp256k1.PrivateKey, *secp256k1.PublicKey) {
 	publicKey := privateKey.PubKey()
 
 	if save {
-		saveKeyToFile("private.pem", privateKey.Serialize())
+		saveKeyToFile(path, privateKey.Serialize())
 		// saveKeyToFile("public.pem", publicKey.SerializeUncompressed())
 	}
 	return privateKey, publicKey

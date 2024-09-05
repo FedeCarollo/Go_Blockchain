@@ -15,10 +15,12 @@ type Transaction struct {
 	To        []byte
 	Amount    float64
 	Gas       float64
-	Signature struct {
-		Sign            []byte
-		SenderPublicKey []byte
-	}
+	Signature SignatureCheck
+}
+
+type SignatureCheck struct {
+	Signature       []byte
+	SenderPublicKey []byte
 }
 
 func (t *Transaction) Sign(sender_private_key []byte) {
@@ -34,7 +36,7 @@ func (t *Transaction) Sign(sender_private_key []byte) {
 
 	serialSign := signature.Serialize()
 
-	t.Signature.Sign = serialSign
+	t.Signature.Signature = serialSign
 	t.Signature.SenderPublicKey = privKey.PubKey().SerializeUncompressed()
 }
 
@@ -47,7 +49,7 @@ func (t *Transaction) Verify() bool {
 		panic(err)
 	}
 
-	signature, err := schnorr.ParseSignature(t.Signature.Sign)
+	signature, err := schnorr.ParseSignature(t.Signature.Signature)
 
 	if err != nil {
 		panic(err)
@@ -58,19 +60,17 @@ func (t *Transaction) Verify() bool {
 		return false
 	}
 
+	// sender address must match the signer public key compressed
 	return bytes.Equal(pubKey.SerializeCompressed(), t.From)
 
 }
 
 func NewTransaction(from, to []byte, amount float64) *Transaction {
 	return &Transaction{
-		From:   from,
-		To:     to,
-		Amount: amount,
-		Signature: struct {
-			Sign            []byte
-			SenderPublicKey []byte
-		}{},
+		From:      from,
+		To:        to,
+		Amount:    amount,
+		Signature: SignatureCheck{},
 	}
 }
 
@@ -78,6 +78,10 @@ func HashTransaction(t Transaction) []byte {
 	joined := bytes.Join([][]byte{t.From, t.To, convertFloatToByte(t.Amount), convertFloatToByte(t.Gas)}, []byte{})
 	hash := sha256.Sum256(joined)
 	return hash[:]
+}
+
+func (t *Transaction) Hash() []byte {
+	return HashTransaction(*t)
 }
 
 func convertFloatToByte(f float64) []byte {

@@ -11,16 +11,28 @@ type Block struct {
 	Timestamp     int64
 	Data          []byte
 	PrevBlockHash []byte
-	Transaction   []Transaction
+	Transactions  []Transaction
 	Hash          []byte
 }
 
 func (b *Block) SetHash() {
 	timestamp := []byte(strconv.FormatInt(b.Timestamp, 10))
-	headers := bytes.Join([][]byte{b.PrevBlockHash, b.Data, timestamp}, []byte{})
+	headers := bytes.Join([][]byte{b.PrevBlockHash, b.Data, timestamp, b.HashTransactions()}, []byte{})
 	hash := sha256.Sum256(headers)
 
 	b.Hash = hash[:]
+}
+
+func (b *Block) HashTransactions() []byte {
+	hashes := make([][]byte, len(b.Transactions))
+
+	for i, transaction := range b.Transactions {
+		hash := transaction.Hash()
+		hashes[i] = hash
+	}
+
+	hash := sha256.Sum256(bytes.Join(hashes, []byte{}))
+	return hash[:]
 }
 
 func NewBlock(data string, prevBlockHash []byte) *Block {
@@ -29,6 +41,7 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 		Data:          []byte(data),
 		PrevBlockHash: prevBlockHash,
 		Hash:          []byte{},
+		Transactions:  []Transaction{},
 	}
 	block.SetHash()
 	return block
