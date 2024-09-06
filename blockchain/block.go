@@ -16,7 +16,6 @@ import (
 
 type Block struct {
 	Timestamp     int64
-	Data          []byte
 	PrevBlockHash []byte
 	Transactions  []Transaction
 	Hash          []byte
@@ -28,7 +27,6 @@ func (b *Block) SetHash() {
 	timestamp := []byte(strconv.FormatInt(b.Timestamp, 10))
 	headers := bytes.Join([][]byte{
 		b.PrevBlockHash,
-		b.Data,
 		timestamp,
 		b.GenerateMerkleTree().GetRoot(),
 		Int64ToBytes(b.Nonce)},
@@ -98,7 +96,6 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 
 	block := Block{
 		Timestamp:     b.Timestamp,
-		Data:          b.Data,
 		Transactions:  transactions,
 		PrevBlockHash: b.PrevBlockHash,
 		Nonce:         0,
@@ -191,7 +188,6 @@ func checkValidHashWithDifficulty(hash []byte, difficulty uint8) bool {
 func NewBlock(data string, prevBlockHash []byte) *Block {
 	block := &Block{
 		Timestamp:     time.Now().Unix(),
-		Data:          []byte(data),
 		PrevBlockHash: prevBlockHash,
 		Hash:          []byte{},
 		Transactions:  []Transaction{},

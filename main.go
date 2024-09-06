@@ -12,16 +12,14 @@ func main() {
 
 	usr2 := user.CreateUserWithParams(false, "")
 
-	genesis := blockchain.NewGenesisBlock()
+	bchain := blockchain.NewBlockChain()
 
-	genesis.SetHash()
-
-	block := blockchain.NewBlock("Test block", genesis.Hash)
+	block := blockchain.NewBlock("Test block", bchain.GetLastHash())
 	transaction := blockchain.NewTransaction(usr.GetUserId(), usr2.GetUserId(), 1, 0)
 
 	block.AddTransaction(*transaction)
 
-	block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 4)
+	block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 4, bchain)
 
 	// fmt.Printf("User ID: %x\n", usr.GetUserId())
 }

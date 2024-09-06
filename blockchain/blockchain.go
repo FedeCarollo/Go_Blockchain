@@ -32,6 +32,10 @@ func (b *Blockchain) GetWalletAmount(address []byte) {
 	}
 }
 
+func (b *Blockchain) GetLastHash() []byte {
+	return b.blocks[len(b.blocks)-1].Hash
+}
+
 func NewBlockChain() *Blockchain {
 	return &Blockchain{
 		blocks: []*Block{NewGenesisBlock()},
