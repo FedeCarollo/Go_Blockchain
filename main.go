@@ -17,11 +17,11 @@ func main() {
 	genesis.SetHash()
 
 	block := blockchain.NewBlock("Test block", genesis.Hash)
-	transaction := blockchain.NewTransaction(usr.GetUserId(), usr2.GetUserId(), 1)
+	transaction := blockchain.NewTransaction(usr.GetUserId(), usr2.GetUserId(), 1, 0)
 
 	block.AddTransaction(*transaction)
 
-	block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 1)
+	block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 4)
 
 	// fmt.Printf("User ID: %x\n", usr.GetUserId())
 }

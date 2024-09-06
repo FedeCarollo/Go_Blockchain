@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
+	"errors"
+	"fmt"
 	"math"
 
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
@@ -62,14 +65,53 @@ func (t *Transaction) Verify() bool {
 
 	// sender address must match the signer public key compressed
 	return bytes.Equal(pubKey.SerializeCompressed(), t.From)
+}
+
+func (t *Transaction) IsValid() bool {
+	//TODO: check for each sender if it has enough money
+	verified := t.Verify()
+	return verified
+}
+
+// If the address is the miner of the block it should also take the gas fee
+func (t *Transaction) GetWalletAmount(address []byte, miner bool) float64 {
+	amount := 0.0
+	if miner {
+		amount += t.Gas
+	}
+	if bytes.Equal(t.From, address) {
+		amount -= t.Amount
+	} else if bytes.Equal(t.To, address) {
+		amount += t.Amount
+	}
+	return amount
+}
+
+func ValidateMinerTransaction(t Transaction) (bool, error) {
+	if !bytes.Equal(t.From, []byte{}) {
+		return false, errors.New("miner transaction should have no source")
+	}
+
+	minerFee := 10.0
+
+	if t.Amount != minerFee { //TODO: dynamic miner fee to add
+		return false, fmt.Errorf("miner transaction should have an amount of %v", minerFee)
+	}
+
+	if !t.Verify() {
+		return false, fmt.Errorf("transaction %s is invalid", hex.EncodeToString(t.Hash()))
+	}
+
+	return true, nil
 
 }
 
-func NewTransaction(from, to []byte, amount float64) *Transaction {
+func NewTransaction(from, to []byte, amount float64, gas float64) *Transaction {
 	return &Transaction{
 		From:      from,
 		To:        to,
 		Amount:    amount,
+		Gas:       gas,
 		Signature: SignatureCheck{},
 	}
 }
