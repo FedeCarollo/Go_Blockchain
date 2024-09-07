@@ -1,13 +1,17 @@
 package user
 
-import "github.com/decred/dcrd/dcrec/secp256k1/v4"
+import (
+	"simple_blockchain/blockchain"
+
+	"github.com/decred/dcrd/dcrec/secp256k1/v4"
+)
 
 type User struct {
 	PrivateKey *secp256k1.PrivateKey
 	PublicKey  *secp256k1.PublicKey
 }
 
-//Create User with default parameters
+// Create User with default parameters
 func CreateUser() User {
 
 	return CreateUserWithParams(true, "private.key")
@@ -44,11 +48,15 @@ func (u *User) GetPublicKey() *secp256k1.PublicKey {
 	return u.PublicKey
 }
 
-//TODO: used for testing, remove later
+// TODO: used for testing, remove later
 func (u *User) PrintKeys() {
 	printKeys(*u.PrivateKey, *u.PublicKey)
 }
 
 func (u *User) GetUserId() []byte {
 	return u.PublicKey.SerializeCompressed()
+}
+
+func (u *User) GetWallet(bchain *blockchain.Blockchain) float64 {
+	return bchain.GetWalletAmount(u.GetUserId())
 }

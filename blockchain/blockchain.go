@@ -25,11 +25,12 @@ func (b *Blockchain) AddBlock(block *Block) error {
 	return nil
 }
 
-func (b *Blockchain) GetWalletAmount(address []byte) {
+func (b *Blockchain) GetWalletAmount(address []byte) float64 {
 	amount := 0.0
 	for _, block := range b.blocks {
 		amount += block.GetWalletAmount(address)
 	}
+	return amount
 }
 
 func (b *Blockchain) GetLastHash() []byte {
