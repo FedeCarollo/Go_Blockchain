@@ -33,6 +33,15 @@ func (b *Blockchain) GetWalletAmount(address []byte) float64 {
 	return amount
 }
 
+func (b *Blockchain) GetUserTransactions(address []byte) []Transaction {
+	tr := make([]Transaction, 0)
+
+	for _, block := range b.blocks {
+		tr = append(tr, block.GetUserTransactions(address)...)
+	}
+	return tr
+}
+
 func (b *Blockchain) GetLastHash() []byte {
 	return b.blocks[len(b.blocks)-1].Hash
 }

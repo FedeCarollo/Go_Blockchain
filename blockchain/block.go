@@ -176,6 +176,17 @@ func (b *Block) GetWalletAmount(address []byte) float64 {
 	return amount
 }
 
+func (b *Block) GetUserTransactions(address []byte) []Transaction {
+	tr := make([]Transaction, 0)
+
+	for _, trans := range b.Transactions {
+		if bytes.Equal(trans.From, address) || bytes.Equal(trans.To, address) {
+			tr = append(tr, trans)
+		}
+	}
+	return tr
+}
+
 func checkValidHashWithDifficulty(hash []byte, difficulty uint8) bool {
 	for i := 0; i < int(difficulty); i++ {
 		if hash[i] != 0 {
