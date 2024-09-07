@@ -1,25 +1,35 @@
 package main
 
 import (
+	"fmt"
 	"simple_blockchain/blockchain"
-	"simple_blockchain/user"
 )
 
 func main() {
 	// user.CreateUser()
-	usr := user.GetUserFromFile("private.key")
+	usr := blockchain.GetUserFromFile("private.key")
 	// usr.PrintKeys()
 
-	usr2 := user.CreateUserWithParams(false, "")
+	usr2 := blockchain.CreateUserWithParams(false, "")
 
 	bchain := blockchain.NewBlockChain()
 
-	block := blockchain.NewBlock("Test block", bchain.GetLastHash())
+	fmt.Println(bchain.IsValid())
+
+	block := blockchain.NewBlock(bchain.GetLastHash())
 	transaction := blockchain.NewTransaction(usr.GetUserId(), usr2.GetUserId(), 1, 0)
+	transaction.Sign(usr.GetPrivateKey().Serialize())
 
 	block.AddTransaction(*transaction)
 
-	block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 4, bchain)
+	err := block.MineBlock(usr.GetPublicKey().SerializeUncompressed(), 1, bchain)
+
+	if err != nil {
+		fmt.Printf("Block was not added. Err: %v", err)
+		return
+	}
+
+	fmt.Println(bchain.IsValid())
 
 	// fmt.Printf("User ID: %x\n", usr.GetUserId())
 }

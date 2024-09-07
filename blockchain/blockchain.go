@@ -25,6 +25,31 @@ func (b *Blockchain) AddBlock(block *Block) error {
 	return nil
 }
 
+func (b *Blockchain) IsValid() (bool, error) {
+	if len(b.blocks) == 0 {
+		return false, fmt.Errorf("no blocks in blockchain")
+	}
+
+	genesis := b.GetGenesis()
+
+	if valid, err := genesis.IsGenesisValid(); !valid {
+		return false, err
+	}
+
+	for i := 1; i < len(b.blocks); i++ {
+		if valid, err := b.blocks[i].IsValid(); !valid {
+			return false, err
+		}
+	}
+
+	//TODO: should also check the hash. The genesis block should be stored somewhere
+	return true, nil
+}
+
+func (b *Blockchain) GetGenesis() *Block {
+	return b.blocks[0]
+}
+
 func (b *Blockchain) GetWalletAmount(address []byte) float64 {
 	amount := 0.0
 	for _, block := range b.blocks {

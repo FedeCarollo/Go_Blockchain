@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"math"
@@ -12,6 +11,8 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/schnorr"
 )
+
+const genesisAmount float64 = 1000.0
 
 type Transaction struct {
 	From      []byte
@@ -46,6 +47,10 @@ func (t *Transaction) Sign(sender_private_key []byte) {
 func (t *Transaction) Verify() bool {
 	hash := HashTransaction(*t)
 
+	if bytes.Equal([]byte{}, t.Signature.SenderPublicKey) {
+		return false
+	}
+
 	pubKey, err := secp256k1.ParsePubKey(t.Signature.SenderPublicKey)
 
 	if err != nil {
@@ -67,8 +72,36 @@ func (t *Transaction) Verify() bool {
 	return bytes.Equal(pubKey.SerializeCompressed(), t.From)
 }
 
+func (t *Transaction) VerifyMiner() bool {
+	hash := HashTransaction(*t)
+
+	if bytes.Equal([]byte{}, t.Signature.SenderPublicKey) {
+		return false
+	}
+
+	pubKey, err := secp256k1.ParsePubKey(t.Signature.SenderPublicKey)
+
+	if err != nil {
+		panic(err)
+	}
+
+	signature, err := schnorr.ParseSignature(t.Signature.Signature)
+
+	if err != nil {
+		panic(err)
+	}
+
+	//hashes check if hashes match
+	if !signature.Verify(hash, pubKey) {
+		return false
+	}
+
+	// sender address must match the miner public key compressed
+	return bytes.Equal(pubKey.SerializeCompressed(), t.To)
+}
+
 func (t *Transaction) IsValid() bool {
-	//TODO: check for each sender if it has enough money
+	//TODO: check for each sender if it has enough money and transaction > 0
 	verified := t.Verify()
 	return verified
 }
@@ -87,6 +120,18 @@ func (t *Transaction) GetWalletAmount(address []byte, miner bool) float64 {
 	return amount
 }
 
+func (t *Transaction) IsGenesisValid() (bool, error) {
+	//TODO: check also for other fields?
+	creator := readPrivateKeyFromFile("private.key").PubKey().SerializeCompressed()
+	if !bytes.Equal(creator, t.To) {
+		return false, fmt.Errorf("invalid receiver for genesis block")
+	}
+	if !bytes.Equal([]byte{}, t.From) || t.Amount != genesisAmount {
+		return false, fmt.Errorf("invalid format for genesis block")
+	}
+	return true, nil
+}
+
 func ValidateMinerTransaction(t Transaction) (bool, error) {
 	if !bytes.Equal(t.From, []byte{}) {
 		return false, errors.New("miner transaction should have no source")
@@ -98,9 +143,9 @@ func ValidateMinerTransaction(t Transaction) (bool, error) {
 		return false, fmt.Errorf("miner transaction should have an amount of %v", minerFee)
 	}
 
-	if !t.Verify() {
-		return false, fmt.Errorf("transaction %s is invalid", hex.EncodeToString(t.Hash()))
-	}
+	// if !t.Verify() {
+	// 	return false, fmt.Errorf("transaction %s is invalid", hex.EncodeToString(t.Hash()))
+	// }
 
 	return true, nil
 
@@ -114,6 +159,12 @@ func NewTransaction(from, to []byte, amount float64, gas float64) *Transaction {
 		Gas:       gas,
 		Signature: SignatureCheck{},
 	}
+}
+
+func GenerateGenesisTransaction() *Transaction {
+	creator := GetUserFromFile("private.key")
+	priv := creator.PrivateKey
+	return NewTransaction([]byte{}, priv.PubKey().SerializeCompressed(), genesisAmount, 0)
 }
 
 func HashTransaction(t Transaction) []byte {

@@ -1,8 +1,6 @@
-package user
+package blockchain
 
 import (
-	"simple_blockchain/blockchain"
-
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 )
 
@@ -32,6 +30,7 @@ func GetUser(privateKey *secp256k1.PrivateKey) User {
 	}
 }
 
+// TODO: return also err
 func GetUserFromFile(path string) User {
 	privateKey := readPrivateKeyFromFile(path)
 	return User{
@@ -57,6 +56,6 @@ func (u *User) GetUserId() []byte {
 	return u.PublicKey.SerializeCompressed()
 }
 
-func (u *User) GetWallet(bchain *blockchain.Blockchain) float64 {
+func (u *User) GetWallet(bchain *Blockchain) float64 {
 	return bchain.GetWalletAmount(u.GetUserId())
 }

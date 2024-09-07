@@ -2,13 +2,12 @@ package tests
 
 import (
 	"simple_blockchain/blockchain"
-	"simple_blockchain/user"
 	"testing"
 )
 
 func TestTransactionSigning(t *testing.T) {
-	usr1 := user.CreateUserWithParams(false, "")
-	usr2 := user.CreateUserWithParams(false, "")
+	usr1 := blockchain.CreateUserWithParams(false, "")
+	usr2 := blockchain.CreateUserWithParams(false, "")
 
 	transaction := blockchain.Transaction{
 		From:      usr1.GetUserId(),

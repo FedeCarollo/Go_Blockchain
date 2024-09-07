@@ -87,7 +87,7 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 	// pubKey, err := secp256k1.ParsePubKey(minerKey)
 
 	transactions := make([]Transaction, 1+len(b.Transactions))
-	transactions[0] = *NewTransaction(pubKey.SerializeCompressed(), []byte{}, 10.0, 0.0)
+	transactions[0] = *NewTransaction([]byte{}, pubKey.SerializeCompressed(), 10.0, 0.0)
 	transactions[0].Sign(privKey.Serialize())
 
 	for i, transaction := range b.Transactions {
@@ -101,10 +101,11 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 		Nonce:         0,
 	}
 
+	//TODO: Store complete merkel hash somewhere
 	b.MerkleHash = block.GenerateMerkleTree().GetRoot()
 
 	//TODO: Check block validity also withing blockchain
-	if valid, err := block.IsValid(); !valid {
+	if valid, err := block.IsValidBeforeMining(); !valid {
 		return err
 	}
 
@@ -130,8 +131,17 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 	return nil
 }
 
+// Should be used for all blocks except Genesis
 func (b *Block) IsValid() (bool, error) {
-	if len(b.Transactions) < 2 { //At least 1 transaction + miner fee
+	return b.validateBlock(true)
+}
+
+func (b *Block) IsValidBeforeMining() (bool, error) {
+	return b.validateBlock(false)
+}
+
+func (b *Block) validateBlock(mined bool) (bool, error) {
+	if len(b.Transactions) < 1 { //At least 1 transaction + miner fee
 		return false, errors.New("required at least one transaction in block")
 	}
 
@@ -145,16 +155,26 @@ func (b *Block) IsValid() (bool, error) {
 				hex.EncodeToString(b.Transactions[i].Hash()))
 		}
 	}
-	difficulty := 1 //TODO: difficulty should be taken based on the last blocks mine time
+	difficulty := 1 //TODO: difficulty should be taken based on the last n blocks mine time
 	b.SetHash()
 
 	hash := b.Hash
 
-	if !checkValidHashWithDifficulty(hash, uint8(difficulty)) {
-		return false, errors.New("Hash does not satisfy difficulty level")
+	if mined && !checkValidHashWithDifficulty(hash, uint8(difficulty)) {
+		return false, errors.New("hash does not satisfy difficulty level")
 	}
 
 	return true, nil
+}
+
+func (b *Block) IsGenesisValid() (bool, error) {
+	if len(b.Transactions) != 1 {
+		return false, fmt.Errorf("invalid number of transactions for genesis")
+	}
+	if !bytes.Equal(b.PrevBlockHash, []byte{}) {
+		return false, fmt.Errorf("invalid previous block hash for genesis")
+	}
+	return b.Transactions[0].IsGenesisValid()
 }
 
 func (b *Block) validateMiner() (bool, error) {
@@ -196,18 +216,23 @@ func checkValidHashWithDifficulty(hash []byte, difficulty uint8) bool {
 	return true
 }
 
-func NewBlock(data string, prevBlockHash []byte) *Block {
+func NewBlock(prevBlockHash []byte) *Block {
 	block := &Block{
 		Timestamp:     time.Now().Unix(),
 		PrevBlockHash: prevBlockHash,
 		Hash:          []byte{},
 		Transactions:  []Transaction{},
 		MerkleHash:    []byte{},
+		Nonce:         0,
 	}
 	block.SetHash()
 	return block
 }
 
 func NewGenesisBlock() *Block {
-	return NewBlock("Genesis block", []byte{})
+	block := NewBlock([]byte{})
+	block.Transactions = append(block.Transactions, *GenerateGenesisTransaction())
+	block.MerkleHash = block.GenerateMerkleTree().GetRoot()
+	block.SetHash()
+	return block
 }
