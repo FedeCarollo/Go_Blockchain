@@ -1,0 +1,11 @@
+*.pem
+.exe
+.vscode
+
+*/vendor/*
+
+*/logs/*
+*/tmp/*
+*/.idea/*
+*/.vscode/*
+*/.vs
