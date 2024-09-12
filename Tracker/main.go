@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -16,7 +17,12 @@ func main() {
 	trackerInfo := createTrackerInfo(env)
 	tracker := NewTracker(trackerInfo)
 
-	fmt.Println(tracker.String())
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	go startServer(tracker)
+
+	wg.Wait()
 }
 
 func readEnv() map[string]string {
@@ -28,14 +34,26 @@ func readEnv() map[string]string {
 	env := make(map[string]string)
 
 	env["PORT"] = os.Getenv("PORT")
+	env["IP"] = os.Getenv("IP")
 
 	return env
 }
 
+// Uses the environment variables to create a TrackerInfo object
 func createTrackerInfo(env map[string]string) *TrackerInfo {
 	strPort := env["PORT"]
-	ip := "::1"
-	ipversion := IPv6
+	ip := env["IP"]
+	var ipversion IpVersion
+
+	ipv := os.Getenv("IP_VERSION")
+
+	if ipv == "IPv4" {
+		ipversion = IPv4
+	} else if ipv == "IPv6" {
+		ipversion = IPv6
+	} else {
+		logrus.Fatal("Invalid IP version", ipv)
+	}
 
 	port, err := strconv.Atoi(strPort)
 
