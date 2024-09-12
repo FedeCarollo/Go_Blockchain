@@ -51,3 +51,14 @@ func (t *Tracker) SetInfo(info *Peer) {
 func (t *Tracker) GetPeerCount() int {
 	return t.peers.Size()
 }
+
+func (t *Tracker) String() string {
+	str := "Tracker Info:\n"
+	str += t.info.String()
+
+	str += "Peers:\n"
+	for _, peer := range t.GetPeers() {
+		str += peer.String()
+	}
+	return str
+}
