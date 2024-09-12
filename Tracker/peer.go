@@ -48,3 +48,12 @@ func (p *Peer) getIpVersionString() string {
 		return "IPv6"
 	}
 }
+
+func (p *Peer) GetAddress() (addr string) {
+	if p.ipversion == IPv4 {
+		addr = p.ip + ":" + strconv.Itoa(p.port)
+	} else {
+		addr = "[" + p.ip + "]:" + strconv.Itoa(p.port)
+	}
+	return addr
+}

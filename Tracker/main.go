@@ -22,7 +22,7 @@ func main() {
 func readEnv() map[string]string {
 	err := godotenv.Load()
 	if err != nil {
-		panic(fmt.Sprintf("Unable to read .env file: ", err))
+		panic(fmt.Sprint("Unable to read .env file: ", err))
 	}
 
 	env := make(map[string]string)
