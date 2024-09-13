@@ -2,47 +2,54 @@ package main
 
 import "strconv"
 
+type IpVersion int
+
+const (
+	IPv4 IpVersion = 1
+	IPv6 IpVersion = 2
+)
+
 type Peer struct {
-	ip        string
-	port      int
-	ipversion IpVersion
+	Ip        string
+	Port      int
+	Ipversion IpVersion
 }
 
 func NewPeer(ip string, port int, ipversion IpVersion) *Peer {
 	return &Peer{
-		ip:        ip,
-		port:      port,
-		ipversion: ipversion,
+		Ip:        ip,
+		Port:      port,
+		Ipversion: ipversion,
 	}
 }
 
 func (p *Peer) GetIp() string {
-	return p.ip
+	return p.Ip
 }
 
 func (p *Peer) GetPort() int {
-	return p.port
+	return p.Port
 }
 
 func (p *Peer) GetIpVersion() IpVersion {
-	return p.ipversion
+	return p.Ipversion
 }
 
 func (p *Peer) String() string {
 	str := "Peer Info:\n"
-	str += "IP: " + p.ip + "\n"
-	str += "Port: " + strconv.Itoa(p.port) + "\n"
+	str += "IP: " + p.Ip + "\n"
+	str += "Port: " + strconv.Itoa(p.Port) + "\n"
 	str += "IP Version: " + p.getIpVersionString() + "\n"
 
 	return str
 }
 
 func (p *Peer) Equals(other *Peer) bool {
-	return p.ip == other.ip && p.port == other.port && p.ipversion == other.ipversion
+	return p.Ip == other.Ip && p.Port == other.Port && p.Ipversion == other.Ipversion
 }
 
 func (p *Peer) getIpVersionString() string {
-	if p.ipversion == IPv4 {
+	if p.Ipversion == IPv4 {
 		return "IPv4"
 	} else {
 		return "IPv6"
@@ -50,10 +57,10 @@ func (p *Peer) getIpVersionString() string {
 }
 
 func (p *Peer) GetAddress() (addr string) {
-	if p.ipversion == IPv4 {
-		addr = p.ip + ":" + strconv.Itoa(p.port)
+	if p.Ipversion == IPv4 {
+		addr = p.Ip + ":" + strconv.Itoa(p.Port)
 	} else {
-		addr = "[" + p.ip + "]:" + strconv.Itoa(p.port)
+		addr = "[" + p.Ip + "]:" + strconv.Itoa(p.Port)
 	}
 	return addr
 }

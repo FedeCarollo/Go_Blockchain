@@ -62,9 +62,9 @@ func createTrackerInfo(env map[string]string) *TrackerInfo {
 	}
 
 	trackerInfo := &TrackerInfo{
-		ip:        ip,
-		port:      port,
-		ipversion: ipversion,
+		Ip:        ip,
+		Port:      port,
+		Ipversion: ipversion,
 	}
 
 	return trackerInfo

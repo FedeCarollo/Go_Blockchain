@@ -1,14 +1,10 @@
 package main
 
-import "github.com/hashicorp/go-set/v3"
+import (
+	mapset "github.com/deckarep/golang-set/v2"
+)
 
 //region - TrackerInfo
-type IpVersion int
-
-const (
-	IPv4 IpVersion = 1
-	IPv6 IpVersion = 2
-)
 
 //endregion
 
@@ -18,18 +14,18 @@ type TrackerInfo = Peer
 
 type Tracker struct {
 	info  *Peer
-	peers *set.Set[*Peer]
+	peers mapset.Set[*Peer]
 }
 
 func NewTracker(info *TrackerInfo) *Tracker {
 	return &Tracker{
 		info:  info,
-		peers: set.New[*Peer](0),
+		peers: mapset.NewSet[*Peer](),
 	}
 }
 
 func (t *Tracker) AddPeer(peer *Peer) {
-	t.peers.Insert(peer)
+	t.peers.Add(peer)
 }
 
 func (t *Tracker) RemovePeer(peer *Peer) {
@@ -37,7 +33,7 @@ func (t *Tracker) RemovePeer(peer *Peer) {
 }
 
 func (t *Tracker) GetPeers() []*Peer {
-	return t.peers.Slice()
+	return t.peers.ToSlice()
 }
 
 func (t *Tracker) GetInfo() *Peer {
@@ -49,7 +45,7 @@ func (t *Tracker) SetInfo(info *Peer) {
 }
 
 func (t *Tracker) GetPeerCount() int {
-	return t.peers.Size()
+	return t.peers.Cardinality()
 }
 
 func (t *Tracker) String() string {
