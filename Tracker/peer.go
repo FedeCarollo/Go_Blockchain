@@ -1,12 +1,15 @@
 package main
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 type IpVersion int
 
 const (
-	IPv4 IpVersion = 1
-	IPv6 IpVersion = 2
+	IPv4 IpVersion = 4
+	IPv6 IpVersion = 6
 )
 
 type Peer struct {
@@ -63,4 +66,15 @@ func (p *Peer) GetAddress() (addr string) {
 		addr = "[" + p.Ip + "]:" + strconv.Itoa(p.Port)
 	}
 	return addr
+}
+
+func JsonPeers(peers []*Peer) (string, error) {
+	data, err := json.Marshal(peers)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+
 }

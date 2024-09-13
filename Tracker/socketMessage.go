@@ -34,3 +34,13 @@ func ParseSocketMessage(data []byte) (*SocketMessage, error) {
 	return &sockMsg, nil
 
 }
+
+func (s *SocketMessage) ParseToJson() (string, error) {
+	str, err := json.Marshal(s)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(str), nil
+}

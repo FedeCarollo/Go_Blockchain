@@ -35,6 +35,7 @@ func readEnv() map[string]string {
 
 	env["PORT"] = os.Getenv("PORT")
 	env["IP"] = os.Getenv("IP")
+	env["IP_VERSION"] = os.Getenv("IP_VERSION")
 
 	return env
 }

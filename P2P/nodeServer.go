@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"log"
 	"net"
 
 	"github.com/sirupsen/logrus"
@@ -49,11 +50,14 @@ func handleConnection(conn net.Conn, node *Node) {
 		return
 	}
 
+	logrus.Infof("Received message: %s", sockMsg)
+
 	// Handle the message
 	switch sockMsg.GetType() {
 	case "announce":
 
 	default:
+		log.Println(sockMsg.GetType())
 		logrus.Errorf("Unknown message type: %s", sockMsg.GetType())
 	}
 }

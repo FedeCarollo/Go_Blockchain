@@ -8,8 +8,8 @@ import (
 type IpVersion int
 
 const (
-	IPv4 IpVersion = 1
-	IPv6 IpVersion = 2
+	IPv4 IpVersion = 4
+	IPv6 IpVersion = 6
 )
 
 type Peer struct {

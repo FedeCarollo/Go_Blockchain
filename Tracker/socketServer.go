@@ -74,10 +74,10 @@ func (s *Server) handleConnection(conn net.Conn) {
 
 	logrus.Infof("Connection from %s", conn.RemoteAddr())
 	data, err := s.readData(conn)
-	if err != nil {
-		logrus.Errorf("Error reading data: %v", err)
-		return
-	}
+	// if err != nil {
+	// 	logrus.Errorf("Error reading data: %v", err)
+	// 	return
+	// }
 
 	msg, err := ParseSocketMessage([]byte(data))
 
@@ -87,10 +87,11 @@ func (s *Server) handleConnection(conn net.Conn) {
 	}
 
 	logrus.Infof("Received message of type: %s", msg.GetType())
+	log.Printf("Received message of type: %s", msg.GetType())
 
 	switch msg.GetType() {
 	case "announce":
-		handleAnnounce(s.tracker, msg)
+		handleAnnounce(s.tracker, msg, conn)
 	default:
 		logrus.Errorf("Unknown message type: %s", msg.GetType())
 	}
