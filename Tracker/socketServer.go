@@ -79,7 +79,12 @@ func (s *Server) handleConnection(conn net.Conn) {
 		return
 	}
 
-	msg := ParseSocketMessage(data)
+	msg, err := ParseSocketMessage([]byte(data))
+
+	if err != nil {
+		logrus.Errorf("Error parsing socket message: %v", err)
+		return
+	}
 
 	logrus.Infof("Received message of type: %s", msg.GetType())
 

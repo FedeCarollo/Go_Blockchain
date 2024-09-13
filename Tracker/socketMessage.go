@@ -1,5 +1,7 @@
 package main
 
+import "encoding/json"
+
 type SocketMessage struct {
 	TypeMsg string `json:"type"`
 	Data    string `json:"data"`
@@ -20,9 +22,15 @@ func (s *SocketMessage) GetData() string {
 	return s.Data
 }
 
-func ParseSocketMessage(data string) *SocketMessage {
-	return &SocketMessage{
-		TypeMsg: "type",
-		Data:    data,
+func ParseSocketMessage(data []byte) (*SocketMessage, error) {
+	var sockMsg SocketMessage
+
+	err := json.Unmarshal(data, &sockMsg)
+
+	if err != nil {
+		return nil, err
 	}
+
+	return &sockMsg, nil
+
 }

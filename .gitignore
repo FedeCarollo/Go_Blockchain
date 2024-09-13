@@ -9,3 +9,5 @@
 */.idea/*
 */.vscode/*
 */.vs
+
+./Tracker/logs/log.txt
