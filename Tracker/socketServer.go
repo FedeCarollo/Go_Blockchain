@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"log"
 	"net"
 
@@ -52,37 +51,16 @@ func (s *Server) Start() {
 	}
 }
 
-/*
-Read data from the socket connection
-and returns it as a string
-*/
-func (s *Server) readData(conn net.Conn) (string, error) {
-	reader := bufio.NewReader(conn)
-	data, err := reader.ReadString('\n')
-
-	if err != nil {
-		logrus.Errorf("Error reading data: %v", err)
-		return "", err
-	}
-	return data, nil
-}
-
 // First level of handling the connection message
 func (s *Server) handleConnection(conn net.Conn) {
 	//TODO: Implement
 	defer conn.Close()
 
 	logrus.Infof("Connection from %s", conn.RemoteAddr())
-	data, err := s.readData(conn)
-	// if err != nil {
-	// 	logrus.Errorf("Error reading data: %v", err)
-	// 	return
-	// }
-
-	msg, err := ParseSocketMessage([]byte(data))
+	msg, err := ReadMessage(conn)
 
 	if err != nil {
-		logrus.Errorf("Error parsing socket message: %v", err)
+		logrus.Errorf("Error reading message: %v", err)
 		return
 	}
 
@@ -96,4 +74,14 @@ func (s *Server) handleConnection(conn net.Conn) {
 		logrus.Errorf("Unknown message type: %s", msg.GetType())
 	}
 
+}
+
+// Sends a message to the connection
+func SendMessage[T any](conn net.Conn, typeMsg string, data T, parser func(t T) ([]byte, error)) error {
+	msg, err := ParseDataAndEncapsulateSocketMessage(typeMsg, data, parser)
+	if err != nil {
+		return err
+	}
+	_, err = conn.Write([]byte(msg))
+	return err
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -55,50 +54,17 @@ func ContactTracker(tracker Peer, node *Node) error {
 
 	defer conn.Close()
 
-	// Send the node info to the tracker
-
-	data, err := node.GetInfo().ParseToJson()
+	err = SendMessage(conn, "announce", node.GetInfo(), ParsePeerToJson)
 
 	if err != nil {
-		logrus.Errorf("Error parsing node info to json: %v", err)
-		return err
-	}
-	sockMsg := NewSocketMessage("announce", string(data))
-
-	sockData, err := sockMsg.ParseToJson()
-
-	if err != nil {
-		logrus.Errorf("Error parsing node info to json: %v", err)
+		logrus.Errorf("Error sending message to tracker: %v", err)
 		return err
 	}
 
-	_, err = conn.Write([]byte(sockData + "\n"))
+	peers, err := ReadMessageAndParse(conn, DecodeJsonToPeers)
 
 	if err != nil {
-		logrus.Errorf("Error sending node info to tracker: %v", err)
-		return err
-	}
-
-	// Read the response from the tracker
-	reader := bufio.NewReader(conn)
-	response, err := reader.ReadString('\n')
-
-	if err != nil {
-		logrus.Errorf("Error reading response from tracker: %v", err)
-		return err
-	}
-
-	logrus.Infof("Response from tracker: %v", response)
-
-	var sockRes SocketMessage
-	var peers []Peer
-
-	_ = json.Unmarshal([]byte(response), &sockRes)
-
-	//TODO: Check if the response is correct
-	err = json.Unmarshal([]byte(sockRes.Data), &peers)
-	if err != nil {
-		logrus.Errorf("Error decoding peers from tracker: %v", err)
+		logrus.Errorf("Error reading peers from tracker: %v", err)
 		return err
 	}
 

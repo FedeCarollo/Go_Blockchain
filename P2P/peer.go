@@ -83,3 +83,25 @@ func (p *Peer) ParseToJson() ([]byte, error) {
 
 	return data, nil
 }
+
+func ParsePeerToJson(peer *Peer) ([]byte, error) {
+	data, err := peer.ParseToJson()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func DecodeJsonToPeers(data []byte) ([]Peer, error) {
+	var peers []Peer
+
+	err := json.Unmarshal(data, &peers)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return peers, nil
+}

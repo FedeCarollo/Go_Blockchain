@@ -72,13 +72,13 @@ func (p *Peer) GetAddress() (addr string) {
 	return addr
 }
 
-func JsonPeers(peers []*Peer) (string, error) {
+func ParsePeersToJson(peers []*Peer) ([]byte, error) {
 	data, err := json.Marshal(peers)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(data), nil
+	return data, nil
 
 }

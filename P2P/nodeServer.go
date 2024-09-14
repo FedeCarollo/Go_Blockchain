@@ -43,7 +43,7 @@ func handleConnection(conn net.Conn, node *Node) {
 	}
 
 	// Parse the data
-	sockMsg, err := ParseSocketMessage([]byte(data))
+	sockMsg, err := DecodeSocketMessage([]byte(data))
 
 	if err != nil {
 		logrus.Errorf("Error parsing socket message: %v", err)
