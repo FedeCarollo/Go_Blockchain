@@ -93,7 +93,7 @@ func ContactTracker(tracker Peer, node *Node) error {
 	var sockRes SocketMessage
 	var peers []Peer
 
-	_ = json.Unmarshal([]byte(response), &sockMsg)
+	_ = json.Unmarshal([]byte(response), &sockRes)
 
 	//TODO: Check if the response is correct
 	err = json.Unmarshal([]byte(sockRes.Data), &peers)

@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type IpVersion int
@@ -16,6 +18,7 @@ type Peer struct {
 	Ip        string
 	Port      int
 	Ipversion IpVersion
+	Id        string
 }
 
 func NewPeer(ip string, port int, ipversion IpVersion) *Peer {
@@ -23,6 +26,7 @@ func NewPeer(ip string, port int, ipversion IpVersion) *Peer {
 		Ip:        ip,
 		Port:      port,
 		Ipversion: ipversion,
+		Id:        uuid.New().String(),
 	}
 }
 
@@ -43,7 +47,7 @@ func (p *Peer) String() string {
 	str += "IP: " + p.Ip + "\n"
 	str += "Port: " + strconv.Itoa(p.Port) + "\n"
 	str += "IP Version: " + p.getIpVersionString() + "\n"
-
+	str += "ID: " + p.Id + "\n"
 	return str
 }
 
