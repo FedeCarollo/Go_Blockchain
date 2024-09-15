@@ -21,6 +21,7 @@ func main() {
 	wg.Add(1)
 
 	go startServer(tracker)
+	go pingPeers(tracker)
 
 	wg.Wait()
 }
