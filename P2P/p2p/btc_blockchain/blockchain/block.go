@@ -109,8 +109,8 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 		return err
 	}
 
-	if len(blockchain.blocks) > 0 {
-		if !bytes.Equal(blockchain.blocks[len(blockchain.blocks)-1].Hash, block.PrevBlockHash) {
+	if len(blockchain.Blocks) > 0 {
+		if !bytes.Equal(blockchain.Blocks[len(blockchain.Blocks)-1].Hash, block.PrevBlockHash) {
 			return fmt.Errorf("inconsistent block in blockchain")
 		}
 	}
@@ -127,7 +127,7 @@ func (b *Block) MineBlock(minerPrivKey []byte, difficulty uint8, blockchain *Blo
 		block.Nonce++
 	}
 
-	blockchain.blocks = append(blockchain.blocks, &block)
+	blockchain.Blocks = append(blockchain.Blocks, &block)
 	return nil
 }
 

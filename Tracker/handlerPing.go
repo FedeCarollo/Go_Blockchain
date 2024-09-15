@@ -29,20 +29,24 @@ func pingPeers(t *Tracker) {
 	ticker := time.NewTicker(PING_INTERVAL)
 
 	for range ticker.C {
+		peers := t.GetPeers()
 
+		for _, peer := range peers {
+			go pingPeer(peer, t)
+		}
 	}
 }
 
 func pingPeer(peer *Peer, t *Tracker) {
 	conn, err := net.Dial("tcp", peer.GetAddress())
 	if err != nil {
-		logrus.Errorf("Error connecting to peer %v: %v", peer, err)
+		logrus.Errorf("Error connecting to peer %v: %v", peer.Id, err)
 	}
 
 	err = SendMessage(conn, "ping", peer, ParsePeerToJson)
 
 	if err != nil {
-		logrus.Errorf("Error sending ping message to peer %v: %v", peer, err)
+		logrus.Errorf("Error sending ping message to peer %v: %v", peer.Id, err)
 		t.RemovePeer(peer)
 		return
 	}
@@ -52,7 +56,7 @@ func pingPeer(peer *Peer, t *Tracker) {
 	msg, err := ReadMessage(conn)
 
 	if err != nil {
-		logrus.Errorf("Error reading message from peer %v: %v", peer, err)
+		logrus.Errorf("Error reading message from peer %v: %v", peer.Id, err)
 		t.RemovePeer(peer)
 		return
 	}
