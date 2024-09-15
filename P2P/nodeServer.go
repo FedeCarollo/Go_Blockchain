@@ -56,6 +56,8 @@ func handleConnection(conn net.Conn, node *Node) {
 	switch sockMsg.GetType() {
 	case "announce":
 
+	case "ping":
+		handlePing(conn, node, sockMsg)
 	default:
 		log.Println(sockMsg.GetType())
 		logrus.Errorf("Unknown message type: %s", sockMsg.GetType())

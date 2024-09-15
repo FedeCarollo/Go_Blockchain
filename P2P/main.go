@@ -14,7 +14,7 @@ func main() {
 	port := readArgs()
 	myInfo := NewPeer("::1", port, IPv6)
 	node := NewNode(myInfo)
-	createLogger()
+	createLogger(true)
 
 	trackers, err := GetTrackersFromFile("trackers.json")
 
@@ -25,6 +25,7 @@ func main() {
 	if !ContactTrackers(trackers, node) {
 		log.Fatalf("Could not contact any trackers")
 	}
+	PingPeers(node)
 
 	// Start the server
 	wg := sync.WaitGroup{}
@@ -33,7 +34,11 @@ func main() {
 	wg.Wait()
 }
 
-func createLogger() {
+func createLogger(console bool) {
+	if console {
+		logrus.SetOutput(os.Stdout)
+		return
+	}
 	//Create logger with logrus
 	logFile, err := os.Create("logs/log.txt")
 

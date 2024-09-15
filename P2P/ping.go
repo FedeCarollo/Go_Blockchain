@@ -3,8 +3,13 @@ package main
 import (
 	"bufio"
 	"net"
+	"time"
 
 	"github.com/sirupsen/logrus"
+)
+
+const (
+	pingTimeout = 10 * time.Second
 )
 
 func PingPeers(node *Node) {
@@ -15,7 +20,7 @@ func PingPeers(node *Node) {
 }
 
 func PingPeer(node *Node, peer Peer) {
-	conn, err := net.Dial("tcp", peer.GetAddress())
+	conn, err := net.DialTimeout("tcp", peer.GetAddress(), pingTimeout)
 	if err != nil {
 		logrus.Errorf("Error connecting to peer: %v", err)
 		return
@@ -23,7 +28,7 @@ func PingPeer(node *Node, peer Peer) {
 
 	defer conn.Close()
 
-	msg, err := ParseDataAndEncapsulateSocketMessage("node", node.GetInfo(), ParsePeerToJson)
+	msg, err := ParseDataAndEncapsulateSocketMessage("ping", node.GetInfo(), ParsePeerToJson)
 
 	if err != nil {
 		logrus.Errorf("Error parsing data to send to peer: %v", err)
@@ -50,4 +55,22 @@ func PingPeer(node *Node, peer Peer) {
 
 	logrus.Infof("Response from peer: %v", response)
 
+}
+
+func handlePing(conn net.Conn, node *Node, sockMsg *SocketMessage) {
+	peer, err := DecodeMessage(sockMsg, DecodeJsonToPeer)
+
+	if err != nil {
+		logrus.Errorf("Error decoding message: %v", err)
+		return
+	}
+
+	logrus.Infof("Received ping from peer: %v", peer.GetAddress())
+
+	// Send a response
+	err = SendMessage(conn, "pong", node.GetInfo(), ParsePeerToJson)
+
+	if err != nil {
+		logrus.Errorf("Error sending response to peer: %v", err)
+	}
 }

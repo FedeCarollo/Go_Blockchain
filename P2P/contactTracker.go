@@ -69,6 +69,7 @@ func ContactTracker(tracker Peer, node *Node) error {
 	}
 
 	node.peers.Append(peers...)
+	node.peers.Remove(*node.GetInfo())
 
 	return nil
 }

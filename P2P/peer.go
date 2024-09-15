@@ -105,3 +105,15 @@ func DecodeJsonToPeers(data []byte) ([]Peer, error) {
 
 	return peers, nil
 }
+
+func DecodeJsonToPeer(data []byte) (*Peer, error) {
+	var peer Peer
+
+	err := json.Unmarshal(data, &peer)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &peer, nil
+}
