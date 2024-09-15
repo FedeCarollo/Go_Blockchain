@@ -30,8 +30,9 @@ func main() {
 
 	// Start the server
 	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go p2p.StartServer(node)
+	wg.Add(2)
+	go StartServer(node)
+	go StartClient(node)
 	wg.Wait()
 }
 
@@ -69,4 +70,16 @@ func readArgs() int {
 		return pInt
 	}
 	return -1
+}
+
+func StartServer(node *p2p.Node) {
+	err := p2p.StartServer(node)
+
+	if err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
+}
+
+func StartClient(node *p2p.Node) {
+
 }

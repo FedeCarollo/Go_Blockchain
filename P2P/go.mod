@@ -2,7 +2,12 @@ module p2p_network
 
 go 1.23.0
 
-require github.com/sirupsen/logrus v1.9.3
+require (
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0
+	github.com/sirupsen/logrus v1.9.3
+)
+
+require github.com/decred/dcrd/crypto/blake256 v1.0.1 // indirect
 
 require (
 	github.com/deckarep/golang-set/v2 v2.6.0
