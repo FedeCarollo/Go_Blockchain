@@ -82,3 +82,26 @@ func ParsePeersToJson(peers []*Peer) ([]byte, error) {
 	return data, nil
 
 }
+
+func ParsePeerToJson(peer *Peer) ([]byte, error) {
+	data, err := json.Marshal(peer)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+
+}
+
+func ParseJsonToPeer(data string) (*Peer, error) {
+	var peer Peer
+
+	err := json.Unmarshal([]byte(data), &peer)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &peer, nil
+}

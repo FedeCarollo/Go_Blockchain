@@ -70,6 +70,8 @@ func (s *Server) handleConnection(conn net.Conn) {
 	switch msg.GetType() {
 	case "announce":
 		handleAnnounce(s.tracker, msg, conn)
+	case "ping":
+		handlePing(s.tracker, msg, conn)
 	default:
 		logrus.Errorf("Unknown message type: %s", msg.GetType())
 	}

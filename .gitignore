@@ -1,6 +1,10 @@
 *.pem
-.exe
+*.exe
 .vscode
+*/.env
+*.env
+
+*/*.exe
 
 */vendor/*
 
