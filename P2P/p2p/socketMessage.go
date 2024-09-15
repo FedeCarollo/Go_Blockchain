@@ -112,3 +112,20 @@ func ReadMessageAndParse[T any](conn net.Conn, parser func(data []byte) (T, erro
 	}
 	return DecodeMessage(sockMsg, parser)
 }
+
+// Send message with no content
+func EncapsulateMessageNoContent(conn net.Conn, typeMsg string) *SocketMessage {
+	sockMsg := NewSocketMessage(typeMsg, "")
+	return sockMsg
+}
+
+// Send message with no content
+func SendMessageNoContent(conn net.Conn, typeMsg string) error {
+	msg, err := encapsulateSocketMessage(typeMsg, []byte(""))
+	if err != nil {
+		return err
+	}
+	_, err = conn.Write([]byte(msg))
+
+	return err
+}

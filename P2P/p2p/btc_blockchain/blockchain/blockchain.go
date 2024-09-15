@@ -76,3 +76,7 @@ func NewBlockChain() *Blockchain {
 		blocks: []*Block{NewGenesisBlock()},
 	}
 }
+
+func (b *Blockchain) GetLength() int {
+	return len(b.blocks)
+}

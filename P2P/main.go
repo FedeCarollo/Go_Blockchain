@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"p2p_network/client"
 	"p2p_network/p2p"
+	"p2p_network/p2p/btc_blockchain/blockchain"
 	"strconv"
 	"sync"
 
@@ -81,5 +83,38 @@ func StartServer(node *p2p.Node) {
 }
 
 func StartClient(node *p2p.Node) {
+	var usr *blockchain.User = nil
+	var blockchain *blockchain.Blockchain = nil
 
+	for {
+		var cmd string
+		fmt.Print("Enter command: ")
+		fmt.Scanln(&cmd)
+		switch cmd {
+		case "createUser":
+			usr = client.CreateUser()
+		case "getBlockchain":
+			blockchain = client.GetBlockchain(node)
+		case "printMySelf":
+			if usr != nil {
+				client.PrintUser(usr)
+			} else {
+				fmt.Println("User not created")
+			}
+		case "peers":
+			client.PrintPeers(node)
+		case "wallet":
+			if usr != nil {
+				fmt.Println("Wallet:", usr.GetWallet(blockchain))
+			} else {
+				fmt.Println("User not created")
+			}
+		case "blocks":
+			// blockchain.PrintBlocks()
+		case "exit":
+			os.Exit(0)
+		default:
+			fmt.Println("Invalid command")
+		}
+	}
 }
