@@ -16,6 +16,6 @@ func handlePing(t *Tracker, msg *SocketMessage, conn net.Conn) {
 
 	t.AddPeer(pingingPeer)
 
-	SendMessage(conn, "pingResponse", t.GetInfo(), ParsePeerToJson)
+	SendMessage(conn, "pong", t.GetInfo(), ParsePeerToJson)
 
 }

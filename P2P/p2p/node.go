@@ -1,4 +1,4 @@
-package main
+package p2p
 
 import (
 	mapset "github.com/deckarep/golang-set/v2"

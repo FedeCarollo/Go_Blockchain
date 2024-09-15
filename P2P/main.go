@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"p2p_network/p2p"
 	"strconv"
 	"sync"
 
@@ -12,25 +13,25 @@ import (
 
 func main() {
 	port := readArgs()
-	myInfo := NewPeer("::1", port, IPv6)
-	node := NewNode(myInfo)
+	myInfo := p2p.NewPeer("::1", port, p2p.IPv6)
+	node := p2p.NewNode(myInfo)
 	createLogger(true)
 
-	trackers, err := GetTrackersFromFile("trackers.json")
+	trackers, err := p2p.GetTrackersFromFile("trackers.json")
 
 	if err != nil {
 		log.Fatalf("Error reading trackers: %v", err)
 	}
 
-	if !ContactTrackers(trackers, node) {
+	if !p2p.ContactTrackers(trackers, node) {
 		log.Fatalf("Could not contact any trackers")
 	}
-	PingPeers(node)
+	p2p.PingPeers(node)
 
 	// Start the server
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	go StartServer(node)
+	go p2p.StartServer(node)
 	wg.Wait()
 }
 
