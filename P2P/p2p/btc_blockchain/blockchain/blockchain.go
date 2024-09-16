@@ -3,6 +3,7 @@ package blockchain
 import (
 	"bytes"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 )
 
@@ -79,4 +80,11 @@ func NewBlockChain() *Blockchain {
 
 func (b *Blockchain) GetLength() int {
 	return len(b.Blocks)
+}
+
+func (b *Blockchain) Serialize() []byte {
+	ser, _ := json.Marshal(b)
+
+	return ser
+
 }
