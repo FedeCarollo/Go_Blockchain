@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"os"
+	"path/filepath"
 
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/schnorr"
@@ -162,7 +164,8 @@ func NewTransaction(from, to []byte, amount float64, gas float64) *Transaction {
 }
 
 func GenerateGenesisTransaction() *Transaction {
-	creator := GetUserFromFile("private.key")
+	wd, _ := os.Getwd()
+	creator := GetUserFromFile(filepath.Join(wd, "p2p", "btc_blockchain", "blockchain", "genesis.key"))
 	priv := creator.PrivateKey
 	return NewTransaction([]byte{}, priv.PubKey().SerializeCompressed(), genesisAmount, 0)
 }
