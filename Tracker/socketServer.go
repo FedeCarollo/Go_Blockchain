@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net"
 
@@ -84,6 +85,10 @@ func SendMessage[T any](conn net.Conn, typeMsg string, data T, parser func(t T) 
 	if err != nil {
 		return err
 	}
-	_, err = conn.Write([]byte(msg))
-	return err
+	if conn != nil {
+		_, err = conn.Write([]byte(msg))
+		return err
+	} else {
+		return errors.New("connection is nil")
+	}
 }
