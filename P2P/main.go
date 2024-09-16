@@ -7,6 +7,7 @@ import (
 	"p2p_network/client"
 	"p2p_network/p2p"
 	"p2p_network/p2p/btc_blockchain/blockchain"
+	"path/filepath"
 	"strconv"
 	"sync"
 
@@ -18,8 +19,7 @@ func main() {
 	myInfo := p2p.NewPeer("::1", port, p2p.IPv6)
 	node := p2p.NewNode(myInfo)
 	createLogger(true)
-
-	trackers, err := p2p.GetTrackersFromFile("trackers.json")
+	trackers, err := p2p.GetTrackersFromFile(filepath.Join(client.GetWd(), "p2p", "trackers.json"))
 
 	if err != nil {
 		log.Fatalf("Error reading trackers: %v", err)
@@ -34,7 +34,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go StartServer(node)
-	go StartClient(node)
+	StartClient(node)
 	wg.Wait()
 }
 
@@ -84,7 +84,7 @@ func StartServer(node *p2p.Node) {
 
 func StartClient(node *p2p.Node) {
 	var usr *blockchain.User = nil
-	var blockchain *blockchain.Blockchain = nil
+	var bchain *blockchain.Blockchain = nil
 
 	for {
 		var cmd string
@@ -94,7 +94,7 @@ func StartClient(node *p2p.Node) {
 		case "createUser":
 			usr = client.CreateUser()
 		case "getBlockchain":
-			blockchain = client.GetBlockchain(node)
+			bchain = client.GetBlockchain(node)
 		case "printMySelf":
 			if usr != nil {
 				client.PrintUser(usr)
@@ -105,7 +105,7 @@ func StartClient(node *p2p.Node) {
 			client.PrintPeers(node)
 		case "wallet":
 			if usr != nil {
-				fmt.Println("Wallet:", usr.GetWallet(blockchain))
+				fmt.Println("Wallet:", usr.GetWallet(bchain))
 			} else {
 				fmt.Println("User not created")
 			}
