@@ -43,7 +43,7 @@ func pingPeer(peer *Peer, t *Tracker) {
 		logrus.Errorf("Error connecting to peer %v: %v", peer.Id, err)
 	}
 
-	err = SendMessage(conn, "ping", peer, ParsePeerToJson)
+	err = SendMessage(conn, "ping", t.GetInfo(), ParsePeerToJson)
 
 	if err != nil {
 		logrus.Errorf("Error sending ping message to peer %v: %v", peer.Id, err)
