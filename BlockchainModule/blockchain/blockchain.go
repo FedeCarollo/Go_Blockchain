@@ -71,8 +71,8 @@ func (b *Blockchain) GetLastHash() []byte {
 	return b.blocks[len(b.blocks)-1].Hash
 }
 
-func NewBlockChain() *Blockchain {
+func NewBlockChain(path string) *Blockchain {
 	return &Blockchain{
-		blocks: []*Block{NewGenesisBlock()},
+		blocks: []*Block{NewGenesisBlock(path)},
 	}
 }

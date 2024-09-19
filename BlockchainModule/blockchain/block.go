@@ -229,9 +229,9 @@ func NewBlock(prevBlockHash []byte) *Block {
 	return block
 }
 
-func NewGenesisBlock() *Block {
+func NewGenesisBlock(path string) *Block {
 	block := NewBlock([]byte{})
-	block.Transactions = append(block.Transactions, *GenerateGenesisTransaction())
+	block.Transactions = append(block.Transactions, *GenerateGenesisTransaction(path))
 	block.MerkleHash = block.GenerateMerkleTree().GetRoot()
 	block.SetHash()
 	return block

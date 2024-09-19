@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 	"simple_blockchain/blockchain"
 )
 
@@ -12,7 +15,7 @@ func main() {
 
 	usr2 := blockchain.CreateUserWithParams(false, "")
 
-	bchain := blockchain.NewBlockChain()
+	bchain := blockchain.NewBlockChain(filepath.Join(GetWd(), "private.key"))
 
 	fmt.Println(bchain.IsValid())
 
@@ -32,4 +35,13 @@ func main() {
 	fmt.Println(bchain.IsValid())
 
 	// fmt.Printf("User ID: %x\n", usr.GetUserId())
+}
+
+func GetWd() string {
+	wd, err := os.Getwd()
+
+	if err != nil {
+		log.Fatalf("Error while getting working directory: %v", err)
+	}
+	return wd
 }

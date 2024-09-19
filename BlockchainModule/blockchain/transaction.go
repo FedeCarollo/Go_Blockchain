@@ -161,8 +161,8 @@ func NewTransaction(from, to []byte, amount float64, gas float64) *Transaction {
 	}
 }
 
-func GenerateGenesisTransaction() *Transaction {
-	creator := GetUserFromFile("private.key")
+func GenerateGenesisTransaction(pathGenesisPvtKey string) *Transaction {
+	creator := GetUserFromFile(pathGenesisPvtKey)
 	priv := creator.PrivateKey
 	return NewTransaction([]byte{}, priv.PubKey().SerializeCompressed(), genesisAmount, 0)
 }
